@@ -1,3 +1,9 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
 # Compiled class file
 *.class
 
@@ -23,12 +29,16 @@
 hs_err_pid*
 replay_pid*
 
-# Spring Boot
-*#
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
 *.ipr
-*.iws
-*.jar
+
+
+
+# Spring Boot
+*#
 *.sw?
 *~
 .#*
