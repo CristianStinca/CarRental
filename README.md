@@ -1,2 +1,2 @@
 # CarRental
-A web application on Java Boot Spring for a car rental website.
+A web application on Java Spring Boot for a car rental website.
