@@ -28,9 +28,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> {
 //                    registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 //                            .requestMatchers("/home", "/register/user").permitAll();
-                    registry.requestMatchers("/", "/home", "/js/**", "/css/**", "/register/**").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
-                    registry.requestMatchers("/user/**").hasRole("USER");
+//                    registry.requestMatchers("/admin/register", "/addCar", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**", "/submitDates").permitAll();
+//                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
+//                    registry.requestMatchers("/user/**").hasRole("USER");
+                    registry.requestMatchers("/**").permitAll();
                     registry.anyRequest().authenticated();
                 })
                 .formLogin(httpSecurityFormLoginConfigurer -> {
