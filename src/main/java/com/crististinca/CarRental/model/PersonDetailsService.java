@@ -31,6 +31,10 @@ public class PersonDetailsService implements UserDetailsService {
         }
     }
 
+    public Person getPersonByUsername(String username) {
+        return personRepository.findByUsername(username).orElse(null);
+    }
+
     private String[] analyzeRoles(Person person) {
         if (person.getRole() == null) {
             return new String[] { "USER" };

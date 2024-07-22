@@ -5,18 +5,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @Entity
 public class Car {
     @Id
-    @SequenceGenerator(
-            name = "car_sequence",
-            sequenceName = "car_sequence"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "car_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty(message = "Brand name cannot be empty.")
@@ -27,7 +22,6 @@ public class Car {
     @Size(min = 2, max = 250)
     private String model;
 
-    private Boolean reserved;
-
-    private Long reserved_by;
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Rents> rentals;
 }

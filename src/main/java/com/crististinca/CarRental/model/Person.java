@@ -9,14 +9,7 @@ import lombok.Data;
 @Entity
 public class Person {
     @Id
-    @SequenceGenerator(
-            name = "person_sequence",
-            sequenceName = "person_sequence"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "person_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty(message = "User's name cannot be empty.")
@@ -28,4 +21,7 @@ public class Person {
     private String password;
 
     private String role;
+
+    @OneToOne(mappedBy = "person")
+    private Client client;
 }
