@@ -12,22 +12,28 @@
     <title th:text="${title}">Title</title>
 </head>
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand-lg bg-body-tertiary">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg bg-body-tertiary" sec:authorize="hasRole('ADMIN')">
     <div class="container-fluid container">
-        <a class="navbar-brand" href="/public">CarRent</a>
+        <a class="navbar-brand" href="/admin">Admin Board CarRent</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" href="/admin">Admin view</a>
+                    <a class="nav-link" href="/public">User view</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a class="nav-link" href="/login" >Login</a>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/admin/register" >Register admin</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a class="nav-link" href="/register" >Register</a>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/admin/rents" >List bookings</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/admin/cars" >List cars</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/admin/addcar" >Add car</a>
                 </li>
             </ul>
         </div>
@@ -46,9 +52,31 @@
             <input type="hidden" name="startDate" th:value="${startDate}">
             <input type="hidden" name="endDate" th:value="${endDate}">
             <input type="hidden" name="carId" th:value="${id}">
-            <button type="submit" class="btn btn-primary">Rent</button>
+            <button type="submit" class="btn btn-primary">Edit</button>
         </form>
     </div>
 </div>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:fragment="tableRow (row)" th:each="col, iterStat : ${row}">
+        <th th:if="${iterStat.index == 0}" th:text="col" scope="row"/>
+        <td th:unless="${iterStat.index == 0}" th:text="col"/>
+    </tr>
+    <tr>
+        <th th:fragment="tableHead (content)" th:text="${content}" scope="row">Text</th>
+        <td th:fragment="tableElement (content)" th:text="${content}">Text</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

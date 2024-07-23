@@ -28,4 +28,9 @@ public class ContentController {
     public String handleLogin() {
         return "custom_login";
     }
+
+    @GetMapping("/")
+    public String handleMain() {
+        return "redirect:/public";
+    }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/login.css" type="text/css">
     <title>Registration</title>
 </head>
@@ -19,7 +19,10 @@
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" th:field="*{password}">
         </div>
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary mb-3">Register</button>
+        <div>
+            Or just go to the <a href="/public">main page.</a>
+        </div>
     </form>
 </div>
 </body>

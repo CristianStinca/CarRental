@@ -11,34 +11,32 @@
     <div>Car brand: <span th:text="${car.brand}"></span></div>
     <div>From: <span th:text="${startDate}"></span></div>
     <div>Until: <span th:text="${endDate}"></span></div>
-    <div>ERR: <span th:if="${errors != null}" th:text="${errors}"></span></div>
-    <div>ERR: <span th:if="${nameErr != null}" th:text="${nameErr}"></span></div>
   </div>
   <div class="card card-body mb-3">
     <h2>Enter your data</h2>
-    <form  action="#" th:action="@{/rentals}" th:object="${client}" method="post">
+    <form  action="#" th:action="@{${path}}" th:object="${client}" method="post">
       <input type="hidden" name="car" th:value="${car.id}">
       <input type="hidden" name="startDate" th:value="${startDate}">
       <input type="hidden" name="endDate" th:value="${endDate}">
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" class="form-control" id="name" th:field="*{name}">
-        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</p>
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="alert alert-danger:">Name Error</p>
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" th:field="*{email}">
-        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p>
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert alert-danger:">Email Error</p>
       </div>
       <div class="mb-3">
         <label for="address" class="form-label">Address</label>
         <input type="text" class="form-control" id="address" th:field="*{address}">
-        <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</p>
+        <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="alert alert-danger:">Address Error</p>
       </div>
       <div class="mb-3">
         <label for="phone_number" class="form-label">Phone number</label>
         <input type="text" class="form-control" id="phone_number" th:field="*{phoneNumber}">
-        <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Phone Number Error</p>
+        <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="alert alert-danger:">Phone Number Error</p>
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>

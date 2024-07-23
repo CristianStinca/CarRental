@@ -21,7 +21,7 @@ public class RegistrationController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register/user")
+    @PostMapping("/register")
     public String createUser(@ModelAttribute Person user, Model model) {
         model.addAttribute("user", user);
         Optional<Person> userOptional = personRepository.findByUsername(user.getUsername());
@@ -36,7 +36,7 @@ public class RegistrationController {
         return "redirect:/user/home";
     }
 
-    @GetMapping("/register/user")
+    @GetMapping("/register")
     public String handleRequest(Model model) {
         model.addAttribute("user", new Person());
         return "custom_register";
@@ -58,6 +58,6 @@ public class RegistrationController {
     @GetMapping("/admin/register")
     public String handleAdminRequest(Model model) {
         model.addAttribute("user", new Person());
-        return "custom_register_admin";
+        return "admin/custom_register_admin";
     }
 }

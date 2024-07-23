@@ -1,6 +1,7 @@
 package com.crististinca.CarRental.configs;
 
 import com.crististinca.CarRental.handlers.AuthenticationSuccessHandler;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,11 +27,11 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-//                    registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-//                            .requestMatchers("/home", "/register/user").permitAll();
-//                    registry.requestMatchers("/admin/register", "/addCar", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**", "/submitDates").permitAll();
-//                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
-//                    registry.requestMatchers("/user/**").hasRole("USER");
+                    registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                            .requestMatchers("/home", "/register/user").permitAll();
+                    registry.requestMatchers("/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
+                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
+                    registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/**").permitAll();
                     registry.anyRequest().authenticated();
                 })

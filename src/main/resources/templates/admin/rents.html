@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="~{fragments/admin.html :: head (CarRent)}">
+</head>
+<body>
+<nav th:replace="~{fragments/admin.html :: navbar}"></nav>
+<div class="container mt-3 mb-3">
+<!--    <p th:text="${rents}"></p>-->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th th:each="col: ${rentsH}" th:text="${col}" scope="col">Text</th>
+        </tr>
+        </thead>
+        <tbody>
+                <tr th:each="row: ${rents}">
+                    <th:block th:each="value,iter : ${row}">
+                        <th th:if="${iter.index == 0}" th:text="${value}" scope="row">Text</th>
+                        <td th:unless="${iter.index == 0}" th:text="${value}">Text</td>
+                    </th:block>
+                </tr>
+<!--            <th:block th:each="booking : ${rents}" th:replace="~{fragments/admin.html :: tableRow(${booking})}">-->
+<!--            </th:block>-->
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
