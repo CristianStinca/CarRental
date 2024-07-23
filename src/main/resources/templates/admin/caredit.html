@@ -5,10 +5,8 @@
 <body>
 <nav th:replace="~{fragments/admin.html :: navbar}"></nav>
 <div class="container mt-3 mb-3">
-    <div class="card mb-3">
-        <div class="card-body">
-            Welcome, Admin!
-        </div>
+    <div class="card card-body">
+        <p>Edit car id = <b th:text="${car.getId()}">number</b>.</p>
     </div>
 </div>
 </body>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="~{fragments/admin.html :: head (CarRent)}">
+</head>
+<body>
+<nav th:replace="~{fragments/admin.html :: navbar}"></nav>
+<div class="container mt-3 mb-3">
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <th:block th:each="car: ${cars}">
+            <div th:replace="~{fragments/admin.html :: indexCard ('/img/blank.jpg', image, ${car.model}, ${car.brand}, '/admin/cars/edit', ${car.id})}"></div>
+        </th:block>
+    </div>
+</div>
+</body>
+</html>

@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="login-container">
-    <h2>Login</h2>
+<!--    <h2>Login</h2>-->
     <form action="/login" method="post">
 
         <div th:if="${param.error}">
@@ -30,7 +30,7 @@
             <input type="password" class="form-control" id="password" name="password">
 <!--            <p th:if="${#fields.hasErrors('password')}">Invalid Password</p>-->
         </div>
-        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+        <button type="submit" class="btn btn-primary mb-3">Login</button>
         <div>
             Not registered yet? <a href="/register/user">Register.</a>
         </div>

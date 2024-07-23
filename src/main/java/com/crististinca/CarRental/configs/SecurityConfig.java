@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> {
                     registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                             .requestMatchers("/home", "/register/user").permitAll();
-                    registry.requestMatchers("/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
+                    registry.requestMatchers("/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/**").permitAll();

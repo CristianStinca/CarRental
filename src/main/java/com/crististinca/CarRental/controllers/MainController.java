@@ -22,57 +22,54 @@ public class MainController {
     @Autowired
     private RentsService rentsService;
 
+    private LocalDate _startDate;
+    private LocalDate _endDate;
+
+    private final DateTimeFormatter formatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("cars", carService.getAllCars());
-        model.addAttribute("dateStr", "");
+        model.addAttribute("dateStr", "Pick a date");
     }
 
     @GetMapping
-    public String index(Model model) {
-        return "index";
-    }
-
-    @GetMapping("/set_date")
-    public String handleMain(@RequestParam(value = "startDate") String startDateStr,
-                             @RequestParam(value = "endDate") String endDateStr,
+    public String handleMain(@RequestParam(value = "startDate", required = false) String startDateStr,
+                             @RequestParam(value = "endDate", required = false) String endDateStr,
                              Model model) {
 
         if (startDateStr == null || endDateStr == null) {
             model.addAttribute("cars", carService.getAllCars());
+            model.addAttribute("dateStr", "Pick a date");
             return "index";
         }
 
         //TODO: Delegate this to RestController
-        DateTimeFormatter formatterOut = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        LocalDate startDate = LocalDate.parse(startDateStr, formatterIn);
-        LocalDate endDate = LocalDate.parse(endDateStr, formatterIn);
+        _startDate = LocalDate.parse(startDateStr, formatterIn);
+        _endDate = LocalDate.parse(endDateStr, formatterIn);
 
-        String dateString = startDate.format(formatterOut) + " - " + endDate.format(formatterOut);
-
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        String dateString = _startDate.format(formatterOut) + " - " + _endDate.format(formatterOut);
         model.addAttribute("dateStr", dateString);
-        model.addAttribute("cars", carService.getAvailableCars(startDate, endDate));
+        model.addAttribute("startDate", _startDate);
+        model.addAttribute("endDate", _endDate);
+        model.addAttribute("cars", carService.getAvailableCars(_startDate, _endDate));
 
         return "index";
     }
 
-    @PostMapping
-    public String selectCar(@RequestParam(value = "startDate", required = false) String startDateStr,
-                            @RequestParam(value = "endDate", required = false) String endDateStr,
-                            @RequestParam(value = "carId") String carId,
+    @GetMapping("/pickCar")
+    public String selectCar(@RequestParam(value = "carId") String carId,
                             Model model,
                             RedirectAttributes redirectAttributes) {
-        if (startDateStr.isBlank() || endDateStr.isBlank()) {
+        if (_startDate == null || _endDate == null) {
             model.addAttribute("dateErr", "Pick a date first");
             return "index";
         }
 
-        redirectAttributes.addAttribute("startDate", startDateStr);
-        redirectAttributes.addAttribute("endDate", endDateStr);
+        redirectAttributes.addAttribute("startDate", _startDate.toString());
+        redirectAttributes.addAttribute("endDate", _endDate.toString());
         return "redirect:/public/cars/" + carId;
     }
 
