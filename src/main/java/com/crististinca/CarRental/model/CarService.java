@@ -32,4 +32,8 @@ public class CarService {
     public boolean isCarAvailable(Car car, LocalDate startDate, LocalDate endDate) {
         return carRepository.findAvailableCars(startDate, endDate).contains(car);
     }
+
+    public Car update(Car car) {
+        return carRepository.save(car);
+    }
 }

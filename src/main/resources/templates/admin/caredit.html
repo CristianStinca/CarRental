@@ -5,8 +5,47 @@
 <body>
 <nav th:replace="~{fragments/admin.html :: navbar}"></nav>
 <div class="container mt-3 mb-3">
-    <div class="card card-body">
-        <p>Edit car id = <b th:text="${car.getId()}">number</b>.</p>
+    <div class="card card-body mb-3">
+        <p>Edit car id = <b th:text="${car.id}">number</b>.</p>
+    </div>
+    <div class="card card-body mb-3">
+        <form action="#" th:action="@{/admin/cars/edit/save}" th:object="${car}" method="post" id="edit_form">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Id</span>
+                <input type="text" class="form-control" th:value="${car.id}" value="Disabled readonly input" aria-describedby="basic-addon1" disabled readonly>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon2">Model</span>
+                <input type="text" class="form-control edit_field" id="bttn1" th:value="${car.model}" aria-describedby="basic-addon2" disabled readonly th:field="*{model}">
+                <button class="btn btn-outline-secondary" onclick="activateField('bttn1')" type="button" id="button-addon2">Edit</button>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon3">Brand</span>
+                <input type="text" class="form-control edit_field" id="bttn2" th:value="${car.brand}" aria-describedby="basic-addon3" disabled readonly  th:field="*{brand}">
+                <button class="btn btn-outline-secondary" onclick="activateField('bttn2')" type="button" id="button-addon3">Edit</button>
+            </div>
+            <button onclick="submitForm('edit_form')" class="btn btn-primary">Save</button>
+            <script>
+                function submitForm(id) {
+                    let form = $(`#${id}`);
+                    let fields = $(".edit_field");
+                    fields.prop("disabled", false);
+                    fields.prop("readonly", false);
+                    form.trigger("submit");
+                }
+
+                function activateField(id) {
+                    let element = $(`#${id}`);
+                    if (element.prop("disabled")) {
+                        element.prop("disabled", false);
+                        element.prop("readonly", false);
+                    } else {
+                        element.prop("disabled", true);
+                        element.prop("readonly", true);
+                    }
+                };
+            </script>
+        </form>
     </div>
 </div>
 </body>
