@@ -28,9 +28,13 @@ public class AdminEditCarController {
 //    @ResponseBody
     public String saveCar(@ModelAttribute("car") Car car) {
         Car origCar = carService.getCarById(carId);
-        origCar.setBrand(car.getBrand());
-        origCar.setModel(car.getModel());
-//        return origCar.toString();
+
+        if (car.getBrand() != null)
+            origCar.setBrand(car.getBrand());
+
+        if (car.getModel() != null)
+            origCar.setModel(car.getModel());
+
         carService.update(origCar);
         return "redirect:/admin/cars";
     }

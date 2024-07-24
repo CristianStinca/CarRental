@@ -78,5 +78,14 @@
     </tr>
     </tbody>
 </table>
+<div th:fragment="editField (data, out, ind, text)" class="input-group mb-3">
+    <span class="input-group-text" th:id="|basic-addon${ind}|" th:text="${text}">Field</span>
+    <input type="text" class="form-control edit_field" th:id="|bttn${ind}|" th:value="${data}" disabled readonly th:field="*{__${out}__}">
+    <button class="btn btn-outline-secondary" th:data-field="${data}" th:onclick="|activateField('bttn${ind}', this.getAttribute('data-field'))|" type="button" th:id="|button-addon${ind}|">Edit</button>
+</div>
+<div th:fragment="editDisabled (data, ind, text)" class="input-group mb-3">
+    <span class="input-group-text" th:id="|basic-addon${ind}|" th:text="${text}">Field</span>
+    <input type="text" class="form-control" th:value="${data}" value="Disabled readonly input" disabled readonly>
+</div>
 </body>
 </html>
