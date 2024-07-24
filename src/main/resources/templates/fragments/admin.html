@@ -87,5 +87,9 @@
     <span class="input-group-text" th:id="|basic-addon${ind}|" th:text="${text}">Field</span>
     <input type="text" class="form-control" th:value="${data}" value="Disabled readonly input" disabled readonly>
 </div>
+<div th:fragment="addField (out, text)" class="input-group mb-3">
+    <span class="input-group-text" th:text="${text}">Field</span>
+    <input type="text" class="form-control" th:field="*{__${out}__}" value="Disabled readonly input">
+</div>
 </body>
 </html>
