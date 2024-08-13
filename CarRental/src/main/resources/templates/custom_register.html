@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/login.css" type="text/css">
+    <title>Registration</title>
+</head>
+<body>
+<div class="login-container">
+    <h2>Registration</h2>
+    <form action="#" th:action="@{/register}" th:object="${user}" method="post">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" th:field="*{username}">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" th:field="*{password}">
+        </div>
+        <button type="submit" class="btn btn-primary mb-3">Register</button>
+        <div>
+            Or just go to the <a href="/public">main page.</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
