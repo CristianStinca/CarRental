@@ -5,10 +5,10 @@ import com.crististinca.CarRental.model.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/cars/add")
@@ -23,12 +23,18 @@ public class AdminAddCarController {
     }
 
     @GetMapping
-    public String handleAddCar(Model model) {
+    public String handleAddCar() {
         return "admin/caradd";
     }
 
     @PostMapping
-    public String addCar(@ModelAttribute Car car) {
+    public String addCar(@ModelAttribute Car car,
+                         @RequestParam("image") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            car.setImageData(null);
+        } else {
+            car.setImageData(file.getBytes());
+        }
         carService.addCar(car);
 
         return "redirect:/admin/cars";

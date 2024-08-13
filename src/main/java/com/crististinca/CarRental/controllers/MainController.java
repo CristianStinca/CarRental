@@ -1,5 +1,6 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.ImageUtil;
 import com.crististinca.CarRental.model.Car;
 import com.crististinca.CarRental.model.CarService;
 import com.crististinca.CarRental.model.RentsService;
@@ -9,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -19,9 +21,6 @@ public class MainController {
     @Autowired
     private CarService carService;
 
-    @Autowired
-    private RentsService rentsService;
-
     private LocalDate _startDate;
     private LocalDate _endDate;
 
@@ -29,9 +28,10 @@ public class MainController {
     private final DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(Model model) throws IOException {
         model.addAttribute("cars", carService.getAllCars());
         model.addAttribute("dateStr", "Pick a date");
+        model.addAttribute("imgUtil", new ImageUtil("static/img/blank.jpg"));
     }
 
     @GetMapping
@@ -71,11 +71,5 @@ public class MainController {
         redirectAttributes.addAttribute("startDate", _startDate.toString());
         redirectAttributes.addAttribute("endDate", _endDate.toString());
         return "redirect:/public/cars/" + carId;
-    }
-
-    @PostMapping("/addcar")
-    public String addCar(@RequestBody Car car) {
-        carService.addCar(car);
-        return "index";
     }
 }

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/cars/edit")
@@ -26,7 +29,8 @@ public class AdminEditCarController {
 
     @PostMapping("/save")
 //    @ResponseBody
-    public String saveCar(@ModelAttribute("car") Car car) {
+    public String saveCar(@ModelAttribute("car") Car car,
+                          @RequestParam("image") MultipartFile file) throws IOException {
         Car origCar = carService.getCarById(carId);
 
         if (car.getBrand() != null)
@@ -35,11 +39,13 @@ public class AdminEditCarController {
         if (car.getModel() != null)
             origCar.setModel(car.getModel());
 
+        if (file.isEmpty()) {
+            origCar.setImageData(null);
+        } else {
+            origCar.setImageData(file.getBytes());
+        }
+
         carService.update(origCar);
         return "redirect:/admin/cars";
     }
-//    public String saveCar(@ModelAttribute("car") Car car) {
-//        carService.update(car);
-//        return "redirect:/admin/cars";
-//    }
 }

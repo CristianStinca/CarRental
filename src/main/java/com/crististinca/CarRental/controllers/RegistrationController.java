@@ -33,7 +33,7 @@ public class RegistrationController {
             user.setRole("USER");
         }
         personRepository.save(user);
-        return "redirect:/user/home";
+        return "redirect:/";
     }
 
     @GetMapping("/register")
@@ -52,7 +52,7 @@ public class RegistrationController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ADMIN,USER");
         personRepository.save(user);
-        return "redirect:/admin/home";
+        return "redirect:/admin";
     }
 
     @GetMapping("/admin/register")

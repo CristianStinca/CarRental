@@ -6,9 +6,17 @@
 <nav th:replace="~{fragments/admin.html :: navbar}"></nav>
 <div class="container mt-3 mb-3">
     <div class="card card-body mb-3">
-        <form action="#" th:action="@{/admin/cars/add}" th:object="${car}" method="post" id="edit_form">
+        <h2>Add a new car.</h2>
+    </div>
+    <div class="card card-body mb-3">
+        <form action="#" th:action="@{/admin/cars/add}" th:object="${car}" method="post" enctype="multipart/form-data" id="edit_form">
             <div th:replace="~{fragments/admin.html :: addField ('model', Model)}"></div>
             <div th:replace="~{fragments/admin.html :: addField ('brand', Brand)}"></div>
+            <div th:replace="~{fragments/admin.html :: addField ('price', Price)}"></div>
+            <div class="mb-3">
+                <input class="form-control" type="file" accept="image/*" id="formFile" name="image">
+            </div>
+            <input type="checkbox" th:field="*{isActive}">
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>

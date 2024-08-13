@@ -23,13 +23,13 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
                     registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                             .requestMatchers("/home", "/register/user").permitAll();
-                    registry.requestMatchers("/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
+                    registry.requestMatchers("/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/**").permitAll();

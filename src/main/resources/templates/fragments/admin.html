@@ -46,13 +46,14 @@
         </form>
     </div>
 </nav>
-<div th:fragment="indexCard (src, alt, title, description, link, id)" class="card" style="width: 18rem;">
-    <img th:src="${src}" class="card-img-top" th:alt="${alt}">
+<div th:fragment="indexCard (src, alt, title, description, link, id)" class="card">
+    <img th:src="${src}" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
     <div class="card-body">
         <h5 class="card-title" th:text="${title}">Card title</h5>
         <p class="card-text" th:text="${description}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
         <form action="#" th:action="@{|${link}/${id}|}" method="get">
             <button type="submit" class="btn btn-primary">Edit</button>
+            <button type="reset" class="btn btn-primary ml-3">Deactivate</button>
         </form>
     </div>
 </div>

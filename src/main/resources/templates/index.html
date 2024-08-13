@@ -7,7 +7,7 @@
     <div class="container mt-3 mb-3">
         <div class="card mb-3">
             <div class="card-body">
-                <h2>Want to rent a car? Pick a date and let's ride!</h2>
+                <h2 class="mb-3">Want to rent a car? Pick a date and let's ride!</h2>
                 <input type="text" id="dates" name="dates" class="form-control pull-right" th:value="${dateStr}"/>
                 <p th:if="${dateErr} != null" th:text="${dateErr}" class="alert alert-danger mt-3"></p>
                 <form id="date_form" method="get" action="/public">
@@ -25,7 +25,7 @@
                                 },
                                 minDate: today,
                                 startDate: today
-                            }, function(start, end, label) {
+                            }, function(start, end) {
                                 $('#startDate').val(start.format('YYYY-MM-DD'));
                                 $('#endDate').val(end.format('YYYY-MM-DD'));
                                 $( "#date_form" ).trigger( "submit" );
@@ -35,10 +35,12 @@
                 </form>
             </div>
         </div>
-<!--        <div th:replace="~{fragments/general.html :: card ('/img/blank.jpg', image, Car, 'Buy this car now!!!')}"></div>-->
-        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 g-4">
             <th:block th:each="car: ${cars}">
-                <div th:replace="~{fragments/general.html :: indexCard ('/img/blank.jpg', image, ${car.model}, ${car.brand}, '/public/pickCar', ${car.id})}"></div>
+                <div class="col-xs-12 col-sm-6">
+                    <div th:replace="~{fragments/general.html :: indexCard (|data:image/jpeg;base64, ${imgUtil.getImgData(car.imageData)}|, image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>
+                </div>
             </th:block>
         </div>
     </div>

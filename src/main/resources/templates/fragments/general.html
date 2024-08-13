@@ -40,15 +40,22 @@
         </form>
     </div>
 </nav>
-<div th:fragment="indexCard (src, alt, title, description, link, id)" class="card" style="width: 18rem;">
-    <img th:src="${src}" class="card-img-top" th:alt="${alt}">
+<div th:fragment="indexCard (src, alt, title, description, price, link, id, active)" class="card h-100" th:classappend="${!active} ? 'bg-black bg-opacity-10'">
+    <img th:src="${src}" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
     <div class="card-body">
         <h5 class="card-title" th:text="${title}">Card title</h5>
-        <p class="card-text" th:text="${description}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <form action="#" th:action="@{${link}}" method="get">
-            <input type="hidden" name="carId" th:value="${id}">
-            <button type="submit" class="btn btn-primary">Rent</button>
-        </form>
+        <p class="card-text" th:text="${description}">Description</p>
+    </div>
+    <hr style="margin: 0;">
+    <div class="card-body">
+        <div style="display: flex; flex-flow: row nowrap; align-items: center;">
+            <p th:text="${price}" style="flex-grow: 100; margin: 0;">Price</p>
+            <form th:if="${active}" action="#" th:action="@{${link}}" method="get" style="align-self: flex-end;">
+                <input type="hidden" name="carId" th:value="${id}">
+                <button type="submit" class="btn btn-primary">Rent</button>
+            </form>
+            <button th:if="${!active}" class="btn btn-secondary">Unavailable</button>
+        </div>
     </div>
 </div>
 </body>

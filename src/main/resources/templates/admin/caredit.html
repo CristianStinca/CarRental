@@ -9,10 +9,13 @@
         <p>Edit car id = <b th:text="${car.id}">number</b>.</p>
     </div>
     <div class="card card-body mb-3">
-        <form action="#" th:action="@{/admin/cars/edit/save}" th:object="${car}" method="post" id="edit_form">
+        <form action="#" th:action="@{/admin/cars/edit/save}" th:object="${car}" method="post" enctype="multipart/form-data" id="edit_form">
             <div th:replace="~{fragments/admin.html :: editDisabled (${car.id}, 1, Id)}"></div>
             <div th:replace="~{fragments/admin.html :: editField (${car.model}, 'model', 2, Model)}"></div>
             <div th:replace="~{fragments/admin.html :: editField (${car.brand}, 'brand', 3, Brand)}"></div>
+            <div class="mb-3">
+                <input class="form-control" type="file" accept="image/*" id="formFile" name="image">
+            </div>
             <button type="submit" class="btn btn-primary">Save</button>
             <script>
                 function activateField(id, val) {
