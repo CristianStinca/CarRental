@@ -1,5 +1,6 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.BasicCarComparator;
 import com.crististinca.CarRental.Utils.ImageUtil;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
@@ -25,6 +26,8 @@ public class AdminCarsController {
 
     private final RestClient restClient;
 
+    private List<Car> cars;
+
     @ModelAttribute
     public void setModelAttributes(Model model) throws IOException {
 
@@ -34,7 +37,10 @@ public class AdminCarsController {
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});
 
-            model.addAttribute("cars", responseCars);
+            if (responseCars != null) {
+                cars = responseCars.stream().sorted(new BasicCarComparator()).toList();
+                model.addAttribute("cars", cars);
+            }
 
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.

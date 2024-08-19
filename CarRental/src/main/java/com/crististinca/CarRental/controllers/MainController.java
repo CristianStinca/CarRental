@@ -1,7 +1,9 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.BasicCarComparator;
 import com.crististinca.CarRental.Utils.ImageUtil;
 import com.crististinca.CarRental.Utils.WClient;
+import com.crististinca.CarRental.model.Car;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,12 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/public")
@@ -32,9 +37,30 @@ public class MainController {
     private final DateTimeFormatter formatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private List<Car> cars = new ArrayList<>();
+
     @ModelAttribute
     public void addAttributes(Model model) throws IOException {
-        model.addAttribute("cars", this.restClient.get().uri("/cars/all").retrieve().body(new ParameterizedTypeReference<>() {}));
+
+        try {
+            List<Car> responseCars = this.restClient.get()
+                    .uri("/cars/all")
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+
+            if (responseCars != null) {
+                cars = responseCars.stream().sorted(new BasicCarComparator()).toList();
+                model.addAttribute("cars", cars);
+            }
+
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+//            return "redirect:/admin?error=Car not found.";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+//            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+        }
+
         model.addAttribute("dateStr", "Pick a date");
         model.addAttribute("imgUtil", new ImageUtil("static/img/blank.jpg"));
     }
