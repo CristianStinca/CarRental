@@ -28,4 +28,12 @@ public class ImageUtil {
 
         return Base64.getMimeEncoder().encodeToString(byteData);
     }
+
+    public String getImgData(String strByteData) {
+        byte[] byteData = Base64.getDecoder().decode(strByteData);
+        if (byteData == null)
+            return DEFAULT_LOC;
+
+        return Base64.getMimeEncoder().encodeToString(byteData);
+    }
 }

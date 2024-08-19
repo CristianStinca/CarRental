@@ -1,6 +1,6 @@
-package com.crististinca.CarRental.model;
+package com.crististinca.CarRentalAPI.model;
 
-import com.crististinca.CarRental.repo.ClientRepository;
+import com.crististinca.CarRentalAPI.repo.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.crististinca.CarRental.model;
+package com.crististinca.CarRentalAPI.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,11 +12,11 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty//(message = "User\'s name cannot be empty.")
+    @NotEmpty(message = "User's name cannot be empty.")
     @Size(min = 2, max = 250)
     private String username;
 
-    @NotEmpty//(message = "User\'s password cannot be empty.")
+    @NotEmpty(message = "User's password cannot be empty.")
     @Size(min = 6, max = 250)
     private String password;
 

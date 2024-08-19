@@ -1,13 +1,19 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -17,17 +23,11 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/public/cars")
 public class CarController {
 
-    @Autowired
-    private RentsService rentsService;
+    public CarController(RestClient.Builder restClientBuilder) {
+        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+    }
 
-    @Autowired
-    private CarService carService;
-
-    @Autowired
-    private ClientService clientService;
-
-    @Autowired
-    private PersonDetailsService personDetailsService;
+    private final RestClient restClient;
 
     @ModelAttribute
     void supplyModel(@PathVariable Long id,
@@ -35,14 +35,20 @@ public class CarController {
                      @RequestParam("endDate") String endDateStr,
                      Model model) {
         String authUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        Person person = personDetailsService.getPersonByUsername(authUser);
-        if (person != null && person.getClient() != null) {
-            model.addAttribute("client", person.getClient());
+
+        ResponseEntity<Person> responsePerson = this.restClient.get()
+                .uri("/users/by/username?username={username}", authUser)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
+                .toEntity(Person.class);
+
+        if (responsePerson.getStatusCode().is2xxSuccessful() && responsePerson.getBody() != null && responsePerson.getBody().getClient() != null) {
+            model.addAttribute("client", responsePerson.getBody().getClient());
         } else {
             model.addAttribute("client", new Client());
         }
 
-        model.addAttribute("car", carService.getCarById(id));
+        model.addAttribute("car", this.restClient.get().uri("/car/details?id={id}", id).retrieve().body(Car.class));
         model.addAttribute("startDate", startDateStr);
         model.addAttribute("endDate", endDateStr);
         model.addAttribute("path", "/public/cars/" + id.toString());
@@ -63,8 +69,7 @@ public class CarController {
                            @RequestParam("startDate") String startDateStr,
                            @RequestParam("endDate") String endDateStr,
                            @Valid @ModelAttribute Client client,
-                           BindingResult bindingResult,
-                           RedirectAttributes redirectAttributes) {
+                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "car_details";
         };
@@ -74,33 +79,62 @@ public class CarController {
         LocalDate startDate = LocalDate.parse(startDateStr, formatterIn);
         LocalDate endDate = LocalDate.parse(endDateStr, formatterIn);
 
-        Car car = carService.getCarById(carId);
-        if (car == null) {
-//            do something
-            return "index";
+        ResponseEntity<Car> responseCar = this.restClient.get()
+                .uri("/car/details?id={carId}", carId)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
+                .toEntity(Car.class);
+
+        if (responseCar.getStatusCode().is4xxClientError()) {
+            return "redirect:/";
         }
 
-        if (!carService.isCarAvailable(car, startDate, endDate)) {
-//            do something
-            return "index";
+        ResponseEntity<Boolean> responseAvailable = this.restClient.get()
+                .uri("/car/details/available?id={carId}&startDate={startDate}&endDate={endDate}", carId, startDate, endDate)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
+                .toEntity(Boolean.class);
+
+        if (responseAvailable.getStatusCode().is4xxClientError() || Boolean.FALSE.equals(responseAvailable.getBody())) {
+            return "redirect:/";
         }
 
-        if (clientService.findClientByEmail(client.getEmail()) != null) {
-            return "index";
-        }
+//        ResponseEntity<Client> responseClient = this.restClient.get().uri("/clients/by/email?email={email}", client.getEmail())
+//                .retrieve()
+//                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
+//                .toEntity(Client.class);
+//
+//        System.out.println("----------------- passed clients/by/email ---------------------");
+//
+//        if (responseClient.getStatusCode().is4xxClientError()) {
+//            return "redirect:/";
+//        }
 
         String authUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        Person person = personDetailsService.getPersonByUsername(authUser);
-        if (person != null) {
-            if (person.getClient() == null) {
-                client.setNewPerson(person);
+
+        ResponseEntity<Person> responsePerson = this.restClient.get()
+                .uri("/users/by/username?username={username}", authUser)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
+                .toEntity(Person.class);
+
+        if (responsePerson.getStatusCode().is2xxSuccessful() && responsePerson.getBody() != null && responsePerson.getBody().getClient() != null) {
+            if (responsePerson.getBody().getClient() == null) {
+                client.setNewPerson(responsePerson.getBody());
             }
         }
-        clientService.addClient(client);
 
-        rentsService.rentCar(carId, startDate, endDate, clientService.findClientByEmail(client.getEmail()));
+        Client clientSaved = this.restClient.post().uri("/clients", client).contentType(MediaType.APPLICATION_JSON).body(client).retrieve().body(Client.class);
 
-        return "index";
+        Rents rent = new Rents();
+        rent.setCar(responseCar.getBody());
+        rent.setRentalDateStart(startDate);
+        rent.setRentalDateEnd(endDate);
+        rent.setClient(clientSaved);
+
+        this.restClient.post().uri("/rents").contentType(MediaType.APPLICATION_JSON).body(rent).retrieve().toBodilessEntity();
+
+        return "redirect:/";
     }
 
 }

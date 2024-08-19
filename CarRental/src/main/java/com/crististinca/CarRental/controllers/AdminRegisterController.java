@@ -20,13 +20,10 @@ import org.springframework.web.client.RestClient;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/register")
-public class RegistrationController {
+@RequestMapping("/admin/register")
+public class AdminRegisterController {
 
-//    @Autowired
-//    private PersonRepository personRepository;
-
-    public RegistrationController(RestClient.Builder restClientBuilder) {
+    public AdminRegisterController(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.baseUrl(WClient.url).build();
     }
 
@@ -41,11 +38,11 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public String createUser(@Valid @ModelAttribute("user") Person user,
-                             BindingResult bindingResult) {
+    public String createAdmin(@Valid @ModelAttribute("user") Person user,
+                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "custom_register";
+            return "admin/custom_register_admin";
         }
 
         ResponseEntity<Person> responsePerson = this.restClient.get()
@@ -56,22 +53,19 @@ public class RegistrationController {
 
         if (responsePerson.getStatusCode().is2xxSuccessful()) {
             bindingResult.rejectValue("username", "error.username", "This username already exists");
-            return "custom_register";
+            return "admin/custom_register_admin";
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null) {
-            user.setRole("USER");
-        }
+        user.setRole("ADMIN,USER");
 
         this.restClient.post().uri("/users").contentType(MediaType.APPLICATION_JSON).body(user).retrieve().toBodilessEntity();
 
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
     @GetMapping
-    public String handleRequest() {
-        return "custom_register";
+    public String handleAdminRequest() {
+        return "admin/custom_register_admin";
     }
-
 }

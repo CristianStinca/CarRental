@@ -40,6 +40,7 @@
             <th:block th:each="car: ${cars}">
                 <div class="col-xs-12 col-sm-6">
                     <div th:replace="~{fragments/general.html :: indexCard (|data:image/jpeg;base64, ${imgUtil.getImgData(car.imageData)}|, image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>
+<!--                    <div th:replace="~{fragments/general.html :: indexCard ('/img/blank.jpg', image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>-->
                 </div>
             </th:block>
         </div>

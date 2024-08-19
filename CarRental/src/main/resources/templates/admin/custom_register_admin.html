@@ -16,11 +16,17 @@
         <form action="#" th:action="@{/admin/register}" th:object="${user}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" th:field="*{username}">
+                <input type="text" class="form-control" id="username" th:field="*{username}" th:errorClass="is-invalid">
+                <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback">
+                    <p th:errors="*{username}"></p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" th:field="*{password}">
+                <input type="password" class="form-control" id="password" th:field="*{password}" th:errorClass="is-invalid">
+                <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback">
+                    <p th:errors="*{password}"></p>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>

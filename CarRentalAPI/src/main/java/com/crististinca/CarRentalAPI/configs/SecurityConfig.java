@@ -1,6 +1,6 @@
-package com.crististinca.CarRental.configs;
+package com.crististinca.CarRentalAPI.configs;
 
-import com.crististinca.CarRental.handlers.AuthenticationSuccessHandler;
+import com.crististinca.CarRentalAPI.handlers.AuthenticationSuccessHandler;
 import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> {
                     registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                             .requestMatchers("/home", "/register/user").permitAll();
-                    registry.requestMatchers("/api/v1/**", "/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
+                    registry.requestMatchers("/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.requestMatchers("/**").permitAll();
