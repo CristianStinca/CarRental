@@ -9,11 +9,10 @@
 </head>
 <body>
 <div class="login-container">
-<!--    <h2>Login</h2>-->
     <form action="/login" method="post">
 
         <div th:if="${param.error}">
-            <p class="text-danger">[[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]</p>
+            <p class="text-danger">Invalid username and/or password.</p>
         </div>
 
         <div th:if="${param.logout}">
@@ -23,12 +22,10 @@
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username">
-<!--            <p th:if="${#fields.hasErrors('username')}">Invalid Name</p>-->
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password">
-<!--            <p th:if="${#fields.hasErrors('password')}">Invalid Password</p>-->
         </div>
         <button type="submit" class="btn btn-primary mb-3">Login</button>
         <div>
