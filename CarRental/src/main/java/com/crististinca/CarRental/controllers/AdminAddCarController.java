@@ -1,11 +1,12 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
-import com.crististinca.CarRental.model.CarService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,8 +15,11 @@ import java.io.IOException;
 @RequestMapping("/admin/cars/add")
 public class AdminAddCarController {
 
-    @Autowired
-    private CarService carService;
+    public AdminAddCarController(RestClient.Builder restClientBuilder) {
+        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+    }
+
+    private final RestClient restClient;
 
     @ModelAttribute
     public void addCarForm(Model model) {
@@ -35,7 +39,13 @@ public class AdminAddCarController {
         } else {
             car.setImageData(file.getBytes());
         }
-        carService.addCar(car);
+
+        Car responseCar = this.restClient.post()
+                .uri("/car/details")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(car)
+                .retrieve()
+                .body(Car.class);
 
         return "redirect:/admin/cars";
     }

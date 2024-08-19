@@ -2,7 +2,6 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Person;
-import com.crististinca.CarRental.repo.PersonRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,18 +12,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClient;
-
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
-
-//    @Autowired
-//    private PersonRepository personRepository;
 
     public RegistrationController(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.baseUrl(WClient.url).build();

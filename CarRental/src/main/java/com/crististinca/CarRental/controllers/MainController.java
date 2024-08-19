@@ -2,21 +2,19 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.ImageUtil;
 import com.crististinca.CarRental.Utils.WClient;
-import com.crististinca.CarRental.model.Car;
-import com.crististinca.CarRental.model.CarService;
-import com.crististinca.CarRental.model.RentsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 @RequestMapping("/public")

@@ -1,9 +1,11 @@
 package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.WClient;
-import com.crististinca.CarRental.model.*;
+import com.crististinca.CarRental.model.Car;
+import com.crististinca.CarRental.model.Client;
+import com.crististinca.CarRental.model.Person;
+import com.crististinca.CarRental.model.Rents;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -14,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
