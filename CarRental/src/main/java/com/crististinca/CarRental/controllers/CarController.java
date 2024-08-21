@@ -1,20 +1,19 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
 import com.crististinca.CarRental.model.Client;
 import com.crististinca.CarRental.model.Person;
 import com.crististinca.CarRental.model.Rents;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
@@ -25,10 +24,10 @@ import java.time.format.DateTimeFormatter;
 public class CarController {
 
     public CarController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+        this.restClientCall = new RestClientCall(restClientBuilder);
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
     @ModelAttribute
     void supplyModel(@PathVariable Long id,
@@ -37,19 +36,13 @@ public class CarController {
                      Model model) {
         String authUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        ResponseEntity<Person> responsePerson = this.restClient.get()
-                .uri("/users/by/username?username={username}", authUser)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-                .toEntity(Person.class);
-
-        if (responsePerson.getStatusCode().is2xxSuccessful() && responsePerson.getBody() != null && responsePerson.getBody().getClient() != null) {
-            model.addAttribute("client", responsePerson.getBody().getClient());
-        } else {
+        try {
+            Person responsePerson = restClientCall.get(Person.class, "/users/by/username?username={username}", authUser);
+            model.addAttribute("client", responsePerson.getClient());
+        } catch (HttpClientErrorException e) {
             model.addAttribute("client", new Client());
         }
 
-        model.addAttribute("car", this.restClient.get().uri("/car/details?id={id}", id).retrieve().body(Car.class));
         model.addAttribute("startDate", startDateStr);
         model.addAttribute("endDate", endDateStr);
         model.addAttribute("path", "/public/cars/" + id.toString());
@@ -61,6 +54,17 @@ public class CarController {
                              @PathVariable Long id,
                              @ModelAttribute Client client,
                              Model model) {
+
+        try {
+            Car responseCar = restClientCall.get(Car.class, "/car/details?id={id}", id);
+            model.addAttribute("car", responseCar);
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/public?error=car_not_found&id=" + id;
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/public?error=unexpected_error";
+        }
 
         return "car_details";
     }
@@ -80,60 +84,56 @@ public class CarController {
         LocalDate startDate = LocalDate.parse(startDateStr, formatterIn);
         LocalDate endDate = LocalDate.parse(endDateStr, formatterIn);
 
-        ResponseEntity<Car> responseCar = this.restClient.get()
-                .uri("/car/details?id={carId}", carId)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-                .toEntity(Car.class);
+        Car responseCar;
 
-        if (responseCar.getStatusCode().is4xxClientError()) {
-            return "redirect:/";
+        try {
+            responseCar = restClientCall.get(Car.class, "/car/details?id={carId}", carId);
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/public?error=car_not_found&id=" + carId;
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/public?error=unexpected_error";
         }
 
-        ResponseEntity<Boolean> responseAvailable = this.restClient.get()
-                .uri("/car/details/available?id={carId}&startDate={startDate}&endDate={endDate}", carId, startDate, endDate)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-                .toEntity(Boolean.class);
-
-        if (responseAvailable.getStatusCode().is4xxClientError() || Boolean.FALSE.equals(responseAvailable.getBody())) {
+        try {
+            restClientCall.get(Boolean.class,
+                    "/car/details/available?id={carId}&startDate={startDate}&endDate={endDate}",
+                    carId, startDate, endDate);
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
             return "redirect:/";
         }
-
-//        ResponseEntity<Client> responseClient = this.restClient.get().uri("/clients/by/email?email={email}", client.getEmail())
-//                .retrieve()
-//                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-//                .toEntity(Client.class);
-//
-//        System.out.println("----------------- passed clients/by/email ---------------------");
-//
-//        if (responseClient.getStatusCode().is4xxClientError()) {
-//            return "redirect:/";
-//        }
 
         String authUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        ResponseEntity<Person> responsePerson = this.restClient.get()
-                .uri("/users/by/username?username={username}", authUser)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-                .toEntity(Person.class);
+        try {
+            Person responsePerson = restClientCall.get(Person.class,
+                    "/users/by/username?username={username}", authUser);
+            if (responsePerson.getClient() == null)
+                client.setNewPerson(responsePerson);
+        } catch (HttpClientErrorException ignored) { }
 
-        if (responsePerson.getStatusCode().is2xxSuccessful() && responsePerson.getBody() != null && responsePerson.getBody().getClient() != null) {
-            if (responsePerson.getBody().getClient() == null) {
-                client.setNewPerson(responsePerson.getBody());
-            }
+        Client clientSaved;
+        try {
+            clientSaved = restClientCall.post(Client.class ,"/clients", client);
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/public?error=unexpected_error";
         }
 
-        Client clientSaved = this.restClient.post().uri("/clients", client).contentType(MediaType.APPLICATION_JSON).body(client).retrieve().body(Client.class);
-
         Rents rent = new Rents();
-        rent.setCar(responseCar.getBody());
+        rent.setCar(responseCar);
         rent.setRentalDateStart(startDate);
         rent.setRentalDateEnd(endDate);
         rent.setClient(clientSaved);
 
-        this.restClient.post().uri("/rents").contentType(MediaType.APPLICATION_JSON).body(rent).retrieve().toBodilessEntity();
+        try {
+            Rents responseRent = restClientCall.post(Rents.class,"/rents", rent);
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/public?error=unexpected_error";
+        }
 
         return "redirect:/";
     }

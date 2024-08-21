@@ -2,6 +2,7 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.BasicCarComparator;
 import com.crististinca.CarRental.Utils.ImageUtil;
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,10 +27,10 @@ import java.util.List;
 public class MainController {
 
     public MainController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+        this.restClientCall = new RestClientCall(restClientBuilder);
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
     private LocalDate _startDate;
     private LocalDate _endDate;
@@ -43,22 +44,17 @@ public class MainController {
     public void addAttributes(Model model) throws IOException {
 
         try {
-            List<Car> responseCars = this.restClient.get()
-                    .uri("/cars/all")
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<>() {});
+            cars = restClientCall.getList(Car.class, "/cars/all")
+                    .stream().sorted(new BasicCarComparator()).toList();
 
-            if (responseCars != null) {
-                cars = responseCars.stream().sorted(new BasicCarComparator()).toList();
-                model.addAttribute("cars", cars);
-            }
+            model.addAttribute("cars", cars);
 
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.
-//            return "redirect:/admin?error=Car not found.";
+//            return "redirect:/public?error=car_not_found";
         } catch (HttpClientErrorException e) {
             //TODO: Show unexpected error happened.
-//            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+//            return "redirect:/public?error=unexpected_error";
         }
 
         model.addAttribute("dateStr", "Pick a date");
@@ -71,7 +67,7 @@ public class MainController {
                              Model model) {
 
         if (startDateStr == null || endDateStr == null) {
-            model.addAttribute("cars", this.restClient.get().uri("/cars/all").retrieve().body(new ParameterizedTypeReference<>() {}));
+            model.addAttribute("cars", cars);
             model.addAttribute("dateStr", "Pick a date");
             return "index";
         }
@@ -84,7 +80,21 @@ public class MainController {
         model.addAttribute("dateStr", dateString);
         model.addAttribute("startDate", _startDate);
         model.addAttribute("endDate", _endDate);
-        model.addAttribute("cars", this.restClient.get().uri("/cars/by/date?startDate={_startDate}&endDate={_endDate}", _startDate, _endDate).retrieve().body(new ParameterizedTypeReference<>() {}));
+
+        try {
+            List<Car> carsByDate = restClientCall.getList(Car.class,
+                            "/cars/by/date?startDate={_startDate}&endDate={_endDate}", _startDate, _endDate)
+                    .stream().sorted(new BasicCarComparator()).toList();
+
+            model.addAttribute("cars", carsByDate);
+
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/public?error=car_not_found";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/public?error=unexpected_error";
+        }
 
         return "index";
     }

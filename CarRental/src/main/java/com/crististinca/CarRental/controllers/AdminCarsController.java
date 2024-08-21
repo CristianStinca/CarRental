@@ -2,8 +2,11 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.BasicCarComparator;
 import com.crististinca.CarRental.Utils.ImageUtil;
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +24,10 @@ import java.util.List;
 public class AdminCarsController {
 
     public AdminCarsController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+        this.restClientCall = new RestClientCall(restClientBuilder);
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
     private List<Car> cars;
 
@@ -32,15 +35,10 @@ public class AdminCarsController {
     public void setModelAttributes(Model model) throws IOException {
 
         try {
-            List<Car> responseCars = this.restClient.get()
-                    .uri("/cars/all")
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<>() {});
+            cars = restClientCall.getList(Car.class, "/cars/all")
+                    .stream().sorted(new BasicCarComparator()).toList();
 
-            if (responseCars != null) {
-                cars = responseCars.stream().sorted(new BasicCarComparator()).toList();
-                model.addAttribute("cars", cars);
-            }
+            model.addAttribute("cars", cars);
 
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.

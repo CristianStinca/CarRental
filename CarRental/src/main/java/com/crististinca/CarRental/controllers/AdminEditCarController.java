@@ -1,5 +1,6 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
 import org.springframework.http.MediaType;
@@ -18,23 +19,19 @@ import java.io.IOException;
 public class AdminEditCarController {
 
     public AdminEditCarController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+        this.restClientCall = new RestClientCall(restClientBuilder);
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
     private Car car;
 
     @GetMapping("/{id}")
     public String editCar(@PathVariable Long id, Model model) {
-        Car car;
 
+        Car car;
         try {
-            ResponseEntity<Car> responseCar = this.restClient.get()
-                    .uri("/car/details?id={id}", id)
-                    .retrieve()
-                    .toEntity(Car.class);
-            car = responseCar.getBody();
+            car = restClientCall.get(Car.class, "/car/details?id={id}", id);
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.
             return "redirect:/admin?error=Car not found.";
@@ -49,10 +46,9 @@ public class AdminEditCarController {
     }
 
     @PostMapping("/save")
-//    @ResponseBody
     public String saveCar(@ModelAttribute("car") Car car,
                           @RequestParam("image") MultipartFile file) throws IOException {
-//        Car origCar = carService.getCarById(carId);
+
         Car origCar = this.car;
 
         if (car.getBrand() != null)
@@ -65,24 +61,17 @@ public class AdminEditCarController {
             origCar.setImageData(file.getBytes());
         }
 
-//        carService.update(origCar);
-
         try {
-            ResponseEntity<Car> updatedCar = restClient.put()
-                    .uri("/car/details")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(origCar)
-                    .retrieve()
-                    .toEntity(Car.class);
+            Car updatedCar = restClientCall.put(Car.class, "/car/details", origCar);
         } catch (HttpClientErrorException.Unauthorized e) {
             //TODO: Show unauthorized.
-            return "redirect:/admin?error=User unauthorized.";
+            return "redirect:/admin?error=user_unauthorized";
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.
-            return "redirect:/admin?error=Car not found.";
+            return "redirect:/admin?error=car_not_found";
         } catch (HttpClientErrorException e) {
             //TODO: Show unexpected error happened.
-            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+            return "redirect:/admin?error=unexpected_error";
         }
 
         return "redirect:/admin/cars?success=true";

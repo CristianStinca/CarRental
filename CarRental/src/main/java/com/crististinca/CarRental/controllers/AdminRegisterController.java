@@ -1,5 +1,6 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Person;
 import jakarta.validation.Valid;
@@ -12,24 +13,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Controller
 @RequestMapping("/admin/register")
 public class AdminRegisterController {
 
-    public AdminRegisterController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+    public AdminRegisterController(RestClient.Builder restClientBuilder,
+                                   PasswordEncoder passwordEncoder) {
+        this.restClientCall = new RestClientCall(restClientBuilder);
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @ModelAttribute
     public void addAttributes(Model model) {
@@ -44,13 +48,15 @@ public class AdminRegisterController {
             return "admin/custom_register_admin";
         }
 
-        ResponseEntity<Person> responsePerson = this.restClient.get()
-                .uri("/users/by/username?username={username}", user.getUsername())
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-                .toEntity(Person.class);
+        boolean isPresentPerson = true;
 
-        if (responsePerson.getStatusCode().is2xxSuccessful()) {
+        try {
+            Person responsePerson = restClientCall.get(Person.class, "/users/by/username?username={username}", user.getUsername());
+        } catch (HttpClientErrorException e) {
+            isPresentPerson = false;
+        }
+
+        if (isPresentPerson) {
             bindingResult.rejectValue("username", "error.username", "This username already exists");
             return "admin/custom_register_admin";
         }
@@ -58,7 +64,12 @@ public class AdminRegisterController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ADMIN,USER");
 
-        this.restClient.post().uri("/users").contentType(MediaType.APPLICATION_JSON).body(user).retrieve().toBodilessEntity();
+        try {
+            Person responsePerson = restClientCall.post(Person.class, "/users", user);
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=unexpected_error";
+        }
 
         return "redirect:/admin";
     }

@@ -1,11 +1,14 @@
 package com.crististinca.CarRental.controllers;
 
+import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
+import com.crististinca.CarRental.model.Person;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +19,10 @@ import java.io.IOException;
 public class AdminAddCarController {
 
     public AdminAddCarController(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl(WClient.url).build();
+        this.restClientCall = new RestClientCall(restClientBuilder);
     }
 
-    private final RestClient restClient;
+    private final RestClientCall restClientCall;
 
     @ModelAttribute
     public void addCarForm(Model model) {
@@ -40,12 +43,12 @@ public class AdminAddCarController {
             car.setImageData(file.getBytes());
         }
 
-        Car responseCar = this.restClient.post()
-                .uri("/car/details")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(car)
-                .retrieve()
-                .body(Car.class);
+        try {
+            Car responseCar = restClientCall.post(Car.class, "/car/details", car);
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=unexpected_error";
+        }
 
         return "redirect:/admin/cars";
     }
