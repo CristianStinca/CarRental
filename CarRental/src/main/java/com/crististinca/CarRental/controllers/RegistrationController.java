@@ -1,15 +1,8 @@
 package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.RestClientCall;
-import com.crististinca.CarRental.Utils.WClient;
-import com.crististinca.CarRental.model.Client;
 import com.crististinca.CarRental.model.Person;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -3,9 +3,7 @@ package com.crististinca.CarRental.controllers;
 import com.crististinca.CarRental.Utils.BasicCarComparator;
 import com.crististinca.CarRental.Utils.ImageUtil;
 import com.crististinca.CarRental.Utils.RestClientCall;
-import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,13 +36,13 @@ public class MainController {
     private final DateTimeFormatter formatterOut = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter formatterIn = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private List<Car> cars = new ArrayList<>();
+//    private List<Car> cars = new ArrayList<>();
 
     @ModelAttribute
     public void addAttributes(Model model) throws IOException {
 
         try {
-            cars = restClientCall.getList(Car.class, "/cars/all")
+            List<Car> cars = restClientCall.getList(Car.class, "/cars/all")
                     .stream().sorted(new BasicCarComparator()).toList();
 
             model.addAttribute("cars", cars);
@@ -67,7 +65,22 @@ public class MainController {
                              Model model) {
 
         if (startDateStr == null || endDateStr == null) {
-            model.addAttribute("cars", cars);
+
+            try {
+                List<Car> cars = restClientCall.getList(Car.class, "/cars/all")
+                        .stream().sorted(new BasicCarComparator()).toList();
+
+                model.addAttribute("cars", cars);
+
+            } catch (HttpClientErrorException.NotFound e) {
+                //TODO: Show error that car was not found.
+                return "redirect:/public?error=car_not_found";
+            } catch (HttpClientErrorException e) {
+                //TODO: Show unexpected error happened.
+//                return "redirect:/public?error=unexpected_error";
+            }
+
+//            model.addAttribute("cars", cars);
             model.addAttribute("dateStr", "Pick a date");
             return "index";
         }

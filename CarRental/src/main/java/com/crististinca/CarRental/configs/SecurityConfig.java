@@ -3,22 +3,16 @@ package com.crististinca.CarRental.configs;
 import com.crististinca.CarRental.handlers.AuthenticationSuccessHandler;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.client.RestClient;
 
 @Configuration
@@ -27,7 +21,8 @@ import org.springframework.web.client.RestClient;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    private final BearerTokenAuthFilter bearerTokenAuthFilter;
+    private final CustomLogoutHandler logoutHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                                    RestClient.Builder restClientBuilder) throws Exception {
@@ -49,11 +44,7 @@ public class SecurityConfig {
                             .successHandler(new AuthenticationSuccessHandler())
                             .permitAll();
                 })
-//                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAfter(bearerTokenAuthFilter, BasicAuthenticationFilter.class)
-//                .authenticationProvider(new CustomAuthenticationProvider(restClientBuilder))
-//                .authenticationProvider(authenticationProvider())
-//                .authenticationManager(authManager(httpSecurity, restClientBuilder))
+                .logout((logout) -> logout.addLogoutHandler(logoutHandler))
                 .build();
     }
 
@@ -63,22 +54,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    public AuthenticationProvider authenticationProvider(RestClient.Builder restClientBuilder) {
+        CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider(restClientBuilder);
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http,
-                                             CustomAuthenticationProvider authProvider) throws Exception {
-
-        AuthenticationManagerBuilder authenticationManagerBuilder = http
-                .getSharedObject(AuthenticationManagerBuilder.class);
-//        authenticationManagerBuilder.authenticationProvider(authenticationProvider());
-        authenticationManagerBuilder.authenticationProvider(authProvider);
-        return authenticationManagerBuilder.build();
     }
 
     @Bean

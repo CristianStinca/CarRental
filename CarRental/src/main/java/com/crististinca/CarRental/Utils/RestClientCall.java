@@ -1,8 +1,5 @@
 package com.crististinca.CarRental.Utils;
 
-import com.crististinca.CarRental.model.Car;
-import com.crististinca.CarRental.model.Client;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -35,7 +32,7 @@ public class RestClientCall {
         ArrayList<T> responseObjs = this.restClient.get()
                 .uri(uri, args)
 //                .headers(header -> header.add(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
@@ -53,7 +50,7 @@ public class RestClientCall {
         ResponseEntity<T> responseObj = this.restClient.get()
                 .uri(uri, args)
 //                .headers(header -> header.add(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token)
                 .retrieve()
                 .toEntity(clazz);
 
