@@ -1,9 +1,7 @@
 package com.crististinca.CarRentalAPI.controllers;
 
-import com.crististinca.CarRentalAPI.model.CarService;
 import com.crististinca.CarRentalAPI.model.Client;
 import com.crististinca.CarRentalAPI.model.ClientService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +13,7 @@ public class ClientController {
 
     private final ClientService clientService;
 
-    @Autowired
+//    @Autowired
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
@@ -32,6 +30,7 @@ public class ClientController {
     }
 
     @PostMapping
+//    @RolesAllowed("ADMIN")
     public ResponseEntity<Client> addClient(@RequestBody Client client) {
         return ResponseEntity.ok(clientService.addClient(client));
     }

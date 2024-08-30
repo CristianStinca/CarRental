@@ -2,6 +2,7 @@ package com.crististinca.CarRentalAPI.controllers;
 
 import com.crististinca.CarRentalAPI.model.Car;
 import com.crististinca.CarRentalAPI.model.CarService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,7 @@ public class CarDetailsController {
     }
 
     @PostMapping
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Car> addCar(@RequestBody Car car) {
         car.setId(null);
 
@@ -62,6 +64,7 @@ public class CarDetailsController {
     }
 
     @PutMapping
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Car> updateCar(@RequestBody Car car) {
         Optional<Car> maybeCar = Optional.ofNullable(carService.getCarById(car.getId()));
 

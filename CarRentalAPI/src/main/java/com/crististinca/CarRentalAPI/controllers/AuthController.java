@@ -3,7 +3,6 @@ package com.crististinca.CarRentalAPI.controllers;
 import com.crististinca.CarRentalAPI.model.AuthService;
 import com.crististinca.CarRentalAPI.model.LoginRequest;
 import com.crististinca.CarRentalAPI.model.LoginResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -29,10 +28,10 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Validated LoginRequest request,
                                                HttpServletResponse response) {
         LoginResponse loginResponse = authService.attemptLogin(request.getEmail(), request.getPassword());
-        Cookie cookie = new Cookie("auth", loginResponse.getToken());
+//        Cookie cookie = new Cookie("auth", loginResponse.getToken());
 
         //add cookie to response
-        response.addCookie(cookie);
+//        response.addCookie(cookie);
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.AUTHORIZATION, loginResponse.getToken())

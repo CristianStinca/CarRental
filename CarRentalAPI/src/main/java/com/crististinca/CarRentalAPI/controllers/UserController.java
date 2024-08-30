@@ -1,6 +1,5 @@
 package com.crististinca.CarRentalAPI.controllers;
 
-import com.crististinca.CarRentalAPI.model.ClientService;
 import com.crististinca.CarRentalAPI.model.Person;
 import com.crististinca.CarRentalAPI.model.PersonDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
