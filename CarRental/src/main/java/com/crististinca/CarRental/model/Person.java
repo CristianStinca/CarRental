@@ -1,15 +1,11 @@
 package com.crististinca.CarRental.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-@Entity
 public class Person {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty//(message = "User\'s name cannot be empty.")
@@ -22,6 +18,5 @@ public class Person {
 
     private String role;
 
-    @OneToOne(mappedBy = "person")
     private Client client;
 }

@@ -1,13 +1,11 @@
 package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.RestClientCall;
-import com.crististinca.CarRental.Utils.WClient;
 import com.crististinca.CarRental.model.Car;
 import com.crististinca.CarRental.model.Client;
 import com.crististinca.CarRental.model.Person;
 import com.crististinca.CarRental.model.Rents;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

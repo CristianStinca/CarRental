@@ -1,6 +1,5 @@
 package com.crististinca.CarRental.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -9,10 +8,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-@Entity
 public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty(message = "Name cannot be empty.")
@@ -32,11 +28,8 @@ public class Client {
     @Size(min = 2, max = 250)
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Rents> rentals;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
     public void setNewPerson(Person person) {

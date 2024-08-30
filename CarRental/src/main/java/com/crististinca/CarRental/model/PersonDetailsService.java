@@ -1,6 +1,7 @@
 package com.crististinca.CarRental.model;
 
 import com.crististinca.CarRental.Utils.WClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,12 +23,12 @@ public class PersonDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Optional<Person> user = personRepository.findByUsername(username);
 
         Optional<Person> user = Optional.empty();
         try {
             user = Optional.ofNullable(this.restClient.get()
                     .uri("/users/by/username?username={username}", username)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token)
                     .retrieve()
                     .body(Person.class));
         } catch (HttpClientErrorException.NotFound e) {

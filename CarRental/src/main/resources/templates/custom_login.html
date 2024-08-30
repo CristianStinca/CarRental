@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/login.css" type="text/css">
+    <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
     <title>Login</title>
 </head>
 <body>
 <div class="login-container">
-    <form action="/login" method="post">
+    <form action="/login" method="post" id="login_form">
 
         <div th:if="${param.error}">
             <p class="text-danger">Invalid username and/or password.</p>
@@ -35,6 +36,17 @@
             Or just go to the <a href="/public">main page.</a>
         </div>
     </form>
+<!--    <script>-->
+<!--        $( "#login_form" ).on( "submit", function( event ) {-->
+<!--            alert( "Handler for `submit` called." );-->
+<!--            // event.preventDefault();-->
+<!--            // console.log("Submitted");-->
+<!--            $.post( "http://localhost:8282/jwt", { username: "admin", password: "admin" })-->
+<!--                .done(function( data ) {-->
+<!--                    alert( "Data Loaded: " + data );-->
+<!--                });-->
+<!--        });-->
+<!--    </script>-->
 </div>
 </body>
 </html>

@@ -2,11 +2,10 @@ package com.crististinca.CarRental.configs;
 
 import com.crististinca.CarRental.handlers.AuthenticationSuccessHandler;
 import jakarta.servlet.DispatcherType;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -14,17 +13,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-//    @Autowired
     private final UserDetailsService userDetailsService;
-
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+    private final CustomLogoutHandler logoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -32,12 +29,12 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
                     registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                            .requestMatchers("/home", "/register/user").permitAll();
-                    registry.requestMatchers("/api/v1/**", "/admin/register", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
-                    registry.requestMatchers("/user/**").hasRole("USER");
-                    registry.requestMatchers("/**").permitAll();
-                    registry.anyRequest().authenticated();
+                            .requestMatchers("/home", "/register/user").permitAll()
+                            .requestMatchers("/api/v1/**", "/public", "/", "/home", "/js/**", "/webjars/**", "/img/**","/css/**", "/register/**").permitAll()
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/user/**").hasRole("USER")
+                            .requestMatchers("/**").permitAll()
+                            .anyRequest().authenticated();
                 })
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
@@ -46,6 +43,7 @@ public class SecurityConfig {
                             .successHandler(new AuthenticationSuccessHandler())
                             .permitAll();
                 })
+                .logout((logout) -> logout.addLogoutHandler(logoutHandler))
                 .build();
     }
 
@@ -55,8 +53,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    public AuthenticationProvider authenticationProvider(RestClient.Builder restClientBuilder) {
+        CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider(restClientBuilder);
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
