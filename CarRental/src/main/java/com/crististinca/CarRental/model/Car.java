@@ -12,18 +12,19 @@ import java.util.Set;
 public class Car {
     private Long id;
 
-    @NotEmpty(message = "Brand name cannot be empty.")
+    @NotEmpty(message = "brand name cannot be empty.")
     @Size(min = 2, max = 250)
     private String brand;
 
-    @NotEmpty(message = "Model name cannot be empty.")
+    @NotEmpty(message = "model name cannot be empty.")
     @Size(min = 2, max = 250)
     private String model;
 
-    @NotNull(message = "Car should be either active or inactive.")
+    @NotNull(message = "car should be either active or inactive.")
     private Boolean isActive;
 
-    @Positive(message = "Price should be set and positive.")
+    @Positive(message = "price should be positive.")
+    @NotNull(message = "price should be set.")
     private Integer price;
 
     private Set<Rents> rentals;

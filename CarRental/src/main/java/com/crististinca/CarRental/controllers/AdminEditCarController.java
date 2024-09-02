@@ -4,6 +4,7 @@ import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.model.Car;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -44,7 +45,12 @@ public class AdminEditCarController {
 
     @PostMapping("/save")
     public String saveCar(@ModelAttribute("car") Car car,
-                          @RequestParam("image") MultipartFile file) throws IOException {
+                          BindingResult bindingResult,
+                          @RequestParam(name = "image", required = false) MultipartFile file) throws IOException {
+
+        if (bindingResult.hasErrors()) {
+            return "admin/caredit";
+        }
 
         Car origCar = this.car;
 
@@ -54,7 +60,7 @@ public class AdminEditCarController {
         if (car.getModel() != null)
             origCar.setModel(car.getModel());
 
-        if (!file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             origCar.setImageData(file.getBytes());
         }
 

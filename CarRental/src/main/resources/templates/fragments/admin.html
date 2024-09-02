@@ -106,9 +106,12 @@
     <label class="input-group-text equal_field" th:id="|basic-addon${ind}|" th:text="${text}" >Field</label>
     <input type="text" class="form-control" th:value="${data}" value="Disabled readonly input" disabled readonly>
 </div>
-<div th:fragment="addField (out, text)" class="input-group mb-3">
-    <label class="input-group-text equal_field" th:text="${text}">Field</label>
-    <input type="text" class="form-control" th:field="*{__${out}__}" value="Disabled readonly input">
+<div th:fragment="addField (out, text)" class="input-group has-validation mb-3">
+    <span class="input-group-text equal_field" th:text="${text}">Field</span>
+    <input type="text" class="form-control" th:field="*{__${out}__}" value="Disabled readonly input" th:errorClass="is-invalid">
+    <div th:if="${#fields.hasErrors(out)}" class="invalid-feedback">
+        <p th:errors="*{__${out}__}"></p>
+    </div>
 </div>
 </body>
 </html>

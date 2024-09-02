@@ -41,16 +41,13 @@ public class AdminAddCarController {
     }
 
     @PostMapping
-    @ResponseBody
-    public String addCar(@Valid @ModelAttribute Car car,
-                         @RequestParam("image") MultipartFile file,
-                         BindingResult bindingResult) throws IOException {
+    public String addCar(@Valid @ModelAttribute("car") Car car,
+                         BindingResult bindingResult,
+                         @RequestParam("image") MultipartFile file) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "admin/caradd";
         };
-//
-//        return car.toString() + "///" + file.toString();
 
         if (file.isEmpty()) {
             car.setImageData(null);

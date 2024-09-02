@@ -9,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -26,12 +27,17 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        ResponseEntity<LoginRequest> responseObj = this.restClient.post()
-                .uri("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new LoginRequest(username, password))
-                .retrieve()
-                .toEntity(LoginRequest.class);
+        ResponseEntity<LoginRequest> responseObj;
+        try {
+            responseObj = this.restClient.post()
+                    .uri("/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new LoginRequest(username, password))
+                    .retrieve()
+                    .toEntity(LoginRequest.class);
+        } catch (HttpStatusCodeException e) {
+            throw new BadCredentialsException("Bad credentials");
+        }
 
         List<String> list = responseObj.getHeaders().get(HttpHeaders.AUTHORIZATION);
 

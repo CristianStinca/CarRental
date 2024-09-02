@@ -11,11 +11,8 @@
     <div class="card card-body mb-3">
         <form action="#" th:action="@{/admin/cars/add}" th:object="${car}" method="post" enctype="multipart/form-data" id="edit_form">
             <div th:replace="~{fragments/admin.html :: addField ('model', Model)}"></div>
-            <p th:if="${#fields.hasErrors('model')}" th:errors="*{model}" class="alert alert-danger:">Name Error</p>
             <div th:replace="~{fragments/admin.html :: addField ('brand', Brand)}"></div>
-            <p th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" class="alert alert-danger:">Name Error</p>
             <div th:replace="~{fragments/admin.html :: addField ('price', Price)}"></div>
-            <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="alert alert-danger:">Name Error</p>
             <div class="mb-3">
                 <input class="form-control" type="file" accept="image/*" id="formFile" name="image">
             </div>
