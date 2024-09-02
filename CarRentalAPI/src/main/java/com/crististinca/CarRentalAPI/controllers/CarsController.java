@@ -26,13 +26,20 @@ public class CarsController {
     @GetMapping("/by/date")
     public ResponseEntity<List<Car>> getByDate(@RequestParam("startDate") LocalDate startDate,
                                                @RequestParam("endDate") LocalDate endDate) {
-        List<Car> cars = carService.getAvailableCars(startDate, endDate);
+        List<Car> cars = carService.getAvailableCars(startDate, endDate).stream().filter(Car::getIsActive).toList();
 
         return ResponseEntity.ok(cars);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Car>> getAllCars() {
+        List<Car> cars = carService.getAllCars().stream().filter(Car::getIsActive).toList();
+
+        return ResponseEntity.ok(cars);
+    }
+
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<Car>> getAllCarsAdmin() {
         List<Car> cars = carService.getAllCars();
 
         return ResponseEntity.ok(cars);

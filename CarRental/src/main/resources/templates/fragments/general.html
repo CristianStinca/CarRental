@@ -41,7 +41,7 @@
     </div>
 </nav>
 <div th:fragment="indexCard (src, alt, title, description, price, link, id, active)" class="card h-100" th:classappend="${!active} ? 'bg-black bg-opacity-10'">
-    <img th:src="${src}" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
+    <img th:src="|data:image/jpeg;base64, ${src}|" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
     <div class="card-body">
         <h5 class="card-title" th:text="${title}">Card title</h5>
         <p class="card-text" th:text="${description}">Description</p>

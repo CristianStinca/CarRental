@@ -31,11 +31,7 @@ public class PersonDetailsService implements UserDetailsService {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + WClient.auth_token)
                     .retrieve()
                     .body(Person.class));
-        } catch (HttpClientErrorException.NotFound e) {
-            //TODO: User not found.
-            throw new UsernameNotFoundException(username);
         } catch (HttpClientErrorException e) {
-            //TODO: Unknown user.
             throw new UsernameNotFoundException(username);
         }
 

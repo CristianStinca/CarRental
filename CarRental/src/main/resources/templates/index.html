@@ -39,8 +39,8 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 g-4">
             <th:block th:each="car: ${cars}">
                 <div class="col-xs-12 col-sm-6">
-                    <div th:replace="~{fragments/general.html :: indexCard (|data:image/jpeg;base64, ${imgUtil.getImgData(car.imageData)}|, image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>
-<!--                    <div th:replace="~{fragments/general.html :: indexCard ('/img/blank.jpg', image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>-->
+<!--                    <div th:replace="~{fragments/general.html :: indexCard (|data:image/jpeg;base64, ${imgUtil.getImgData(car.imageData)}|, image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>-->
+                    <div th:replace="~{fragments/general.html :: indexCard (${imgUtil.getImgData(car.imageData)}, image, ${car.model}, ${car.brand}, ${car.price}, '/public/pickCar', ${car.id}, ${car.isActive})}"></div>
                 </div>
             </th:block>
         </div>

@@ -55,7 +55,7 @@ public class AdminRegisterController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("ADMIN,USER");
+        user.setRole("ADMIN");
 
         try {
             Person responsePerson = restClientCall.post(Person.class, "/users", user);

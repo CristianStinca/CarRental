@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .securityMatcher("/api/v1/**")
                 .authorizeHttpRequests(registry ->
                     registry.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                            .requestMatchers("/api/v1/rents").permitAll()
-                            .requestMatchers("/api/v1/admin").authenticated()
+                            .requestMatchers("/api/v1/rents").hasAuthority("ADMIN")
+//                            .requestMatchers("/api/v1/admin").authenticated()
                             .requestMatchers("/api/v1/auth/login").permitAll()
                             .requestMatchers("/api/v1/car/details").permitAll()
                             .requestMatchers("/api/v1/car/details/available").permitAll()
@@ -48,7 +48,9 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/cars/all").permitAll()
                             .requestMatchers("/api/v1/clients/by/email").permitAll()
                             .requestMatchers("/api/v1/clients").permitAll()
-                            .requestMatchers("/api/v1/users/by/username").hasAuthority("ADMIN")
+                            .requestMatchers("/api/v1/users").permitAll()
+//                            .requestMatchers("/api/v1/users/by/username").hasAuthority("ADMIN")
+                            .requestMatchers("/api/v1/users/by/username").permitAll()
                             .anyRequest().authenticated()
                 )
                 .build();

@@ -46,14 +46,32 @@
         </form>
     </div>
 </nav>
-<div th:fragment="indexCard (src, alt, title, description, link, id)" class="card">
-    <img th:src="${src}" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
+<!--<div th:fragment="indexCard (src, alt, title, description, link, id)" class="card">-->
+<!--    <img th:src="${src}" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">-->
+<!--    <div class="card-body">-->
+<!--        <h5 class="card-title" th:text="${title}">Card title</h5>-->
+<!--        <p class="card-text" th:text="${description}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--        <form action="#" th:action="@{|${link}/${id}|}" method="get">-->
+<!--            <button type="submit" class="btn btn-primary">Edit</button>-->
+<!--            <button type="reset" class="btn btn-primary ml-3">Deactivate</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+<div th:fragment="indexCard (src, alt, title, description, price, link, id, active)" class="card h-100" th:classappend="${!active} ? 'bg-black bg-opacity-10'">
+    <img th:src="|data:image/jpeg;base64, ${src}|" class="card-img-top" style="aspect-ratio: 1; object-fit: cover;" th:alt="${alt}">
     <div class="card-body">
         <h5 class="card-title" th:text="${title}">Card title</h5>
-        <p class="card-text" th:text="${description}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <p class="card-text" th:text="${description}">Description</p>
+    </div>
+    <hr style="margin: 0;">
+    <p class="card-body" th:text="${price}" style="margin: 0">Price</p>
+    <hr style="margin: 0;">
+    <div class="card-body">
         <form action="#" th:action="@{|${link}/${id}|}" method="get">
+            <input type="hidden" name="carId" th:value="${id}">
             <button type="submit" class="btn btn-primary">Edit</button>
-            <button type="reset" class="btn btn-primary ml-3">Deactivate</button>
+            <button type="submit" class="btn btn-primary ml-3" th:if="${active}" th:formaction="@{|${link}/deactivate/${id}|}">Deactivate</button>
+            <button type="submit" class="btn btn-primary ml-3" th:if="${!active}" th:formaction="@{|${link}/activate/${id}|}">Activate</button>
         </form>
     </div>
 </div>
@@ -80,16 +98,16 @@
     </tbody>
 </table>
 <div th:fragment="editField (data, out, ind, text)" class="input-group mb-3">
-    <span class="input-group-text" th:id="|basic-addon${ind}|" th:text="${text}">Field</span>
+    <label class="input-group-text equal_field" th:id="|basic-addon${ind}|" th:text="${text}" th:for="|bttn${ind}|">Field</label>
     <input type="text" class="form-control edit_field" th:id="|bttn${ind}|" th:value="${data}" disabled readonly th:field="*{__${out}__}">
     <button class="btn btn-outline-secondary" th:data-field="${data}" th:onclick="|activateField('bttn${ind}', this.getAttribute('data-field'))|" type="button" th:id="|button-addon${ind}|">Edit</button>
 </div>
 <div th:fragment="editDisabled (data, ind, text)" class="input-group mb-3">
-    <span class="input-group-text" th:id="|basic-addon${ind}|" th:text="${text}">Field</span>
+    <label class="input-group-text equal_field" th:id="|basic-addon${ind}|" th:text="${text}" >Field</label>
     <input type="text" class="form-control" th:value="${data}" value="Disabled readonly input" disabled readonly>
 </div>
 <div th:fragment="addField (out, text)" class="input-group mb-3">
-    <span class="input-group-text" th:text="${text}">Field</span>
+    <label class="input-group-text equal_field" th:text="${text}">Field</label>
     <input type="text" class="form-control" th:field="*{__${out}__}" value="Disabled readonly input">
 </div>
 </body>

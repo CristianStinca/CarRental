@@ -31,7 +31,7 @@ public class AdminCarsController {
     public void setModelAttributes(Model model) throws IOException {
 
         try {
-            cars = restClientCall.getList(Car.class, "/cars/all")
+            cars = restClientCall.getList(Car.class, "/cars/all/admin")
                     .stream().sorted(new BasicCarComparator()).toList();
 
             model.addAttribute("cars", cars);

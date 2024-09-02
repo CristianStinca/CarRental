@@ -124,4 +124,8 @@ public class MainController {
         redirectAttributes.addAttribute("endDate", _endDate.toString());
         return "redirect:/public/cars/" + carId;
     }
+
+    public void sayHello() {
+        System.out.println("Hello World");
+    }
 }

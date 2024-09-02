@@ -73,4 +73,68 @@ public class AdminEditCarController {
 
         return "redirect:/admin/cars?success=true";
     }
+
+    @GetMapping("/deactivate/{id}")
+    public String deactivateCar(@PathVariable Long id) {
+
+        Car car;
+        try {
+            car = restClientCall.get(Car.class, "/car/details?id={id}", id);
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/admin?error=Car not found.";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+        }
+
+        car.setIsActive(false);
+
+        try {
+            restClientCall.put(Car.class, "/car/details", car);
+        } catch (HttpClientErrorException.Unauthorized e) {
+            //TODO: Show unauthorized.
+            return "redirect:/admin?error=user_unauthorized";
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/admin?error=car_not_found";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=unexpected_error";
+        }
+
+        return "redirect:/admin/cars";
+    }
+
+    @GetMapping("/activate/{id}")
+    public String activateCar(@PathVariable Long id) {
+
+        Car car;
+        try {
+            car = restClientCall.get(Car.class, "/car/details?id={id}", id);
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/admin?error=Car not found.";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+        }
+
+        car.setIsActive(true);
+
+        try {
+            restClientCall.put(Car.class, "/car/details", car);
+        } catch (HttpClientErrorException.Unauthorized e) {
+            //TODO: Show unauthorized.
+            return "redirect:/admin?error=user_unauthorized";
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/admin?error=car_not_found";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=unexpected_error";
+        }
+
+        return "redirect:/admin/cars";
+    }
 }

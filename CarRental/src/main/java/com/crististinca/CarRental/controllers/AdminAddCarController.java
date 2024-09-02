@@ -2,14 +2,23 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.model.Car;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/cars/add")
@@ -32,8 +41,17 @@ public class AdminAddCarController {
     }
 
     @PostMapping
-    public String addCar(@ModelAttribute Car car,
-                         @RequestParam("image") MultipartFile file) throws IOException {
+    @ResponseBody
+    public String addCar(@Valid @ModelAttribute Car car,
+                         @RequestParam("image") MultipartFile file,
+                         BindingResult bindingResult) throws IOException {
+
+        if (bindingResult.hasErrors()) {
+            return "admin/caradd";
+        };
+//
+//        return car.toString() + "///" + file.toString();
+
         if (file.isEmpty()) {
             car.setImageData(null);
         } else {
