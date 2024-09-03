@@ -6,27 +6,42 @@
 <nav th:replace="~{fragments/admin.html :: navbar}"></nav>
 <div class="container mt-3 mb-3">
     <div class="card card-body mb-3">
-        <p>Edit car id = <b th:text="${car.id}">number</b>.</p>
+        <p>Edit car.</p>
     </div>
     <div class="card card-body mb-3">
-        <form action="#" th:action="@{/admin/cars/edit/save}" th:object="${car}" method="post" enctype="multipart/form-data" id="edit_form">
+        <form action="#" th:action="|@{/admin/cars/edit}/${car.id}|" th:object="${car}" method="post" enctype="multipart/form-data" id="edit_form">
             <div th:replace="~{fragments/admin.html :: editDisabled (${car.id}, 1, Id)}"></div>
             <div th:replace="~{fragments/admin.html :: editField (${car.model}, 'model', 2, Model)}"></div>
             <div th:replace="~{fragments/admin.html :: editField (${car.brand}, 'brand', 3, Brand)}"></div>
+            <div th:replace="~{fragments/admin.html :: editField (${car.price}, 'price', 4, Price)}"></div>
             <div class="input-group mb-3">
-                <label class="input-group-text equal_field" for="bttn4">Image</label>
-                <input class="form-control" type="file" accept="image/*" id="bttn4" name="image" disabled readonly>
-                <button class="btn btn-outline-secondary" th:data-field="${car.imageData}" th:onclick="|activateField('bttn4', this.getAttribute('data-field'))|" type="button" th:id="|button-addon4|">Edit</button>
+                <label class="input-group-text equal_field" for="bttn5">Image</label>
+                <input class="form-control" type="file" accept="image/*" id="bttn5" name="image" disabled readonly>
+                <button class="btn btn-outline-secondary" th:data-field="${car.imageData}" th:onclick="|activateFieldFull('bttn5', this.getAttribute('data-field'))|" type="button" th:id="|button-addon5|">Edit</button>
             </div>
             <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" th:attr="checked=${car.isActive ? 'checked' : null}">
+                <input class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" th:field="*{isActive}" th:checked="${car.isActive} ? 'checked' : null">
                 <label class="form-check-label" for="isActiveSwitch">Active</label>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
             <script>
                 function activateField(id, val) {
                     let element = $(`#${id}`);
-                    if (element.prop("disabled")) {
+                    if (element.prop("readonly")) {
+                        // element.prop("disabled", false);
+                        element.removeClass("disable_in");
+                        element.prop("readonly", false);
+                    } else {
+                        // element.prop("disabled", true);
+                        element.addClass("disable_in");
+                        element.prop("readonly", true);
+                        element.val(val);
+                    }
+                }
+
+                function activateFieldFull(id, val) {
+                    let element = $(`#${id}`);
+                    if (element.prop("readonly")) {
                         element.prop("disabled", false);
                         element.prop("readonly", false);
                     } else {
@@ -35,6 +50,13 @@
                         element.val(val);
                     }
                 }
+
+                $(".form-control").map(function(){
+                    if ($(this).prop("readonly")) {
+                        $(this).addClass("disable_in")
+                    } else {
+                        $(this).removeClass("disable_in")
+                    }})
 
                 let max_w = Math.max.apply(Math, $('.equal_field').map(function(){ return $(this).width(); }).get());
                 $(".equal_field").width(max_w);

@@ -2,6 +2,7 @@ package com.crististinca.CarRental.controllers;
 
 import com.crististinca.CarRental.Utils.RestClientCall;
 import com.crististinca.CarRental.model.Car;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
@@ -22,8 +24,6 @@ public class AdminEditCarController {
 
     private final RestClientCall restClientCall;
 
-    private Car car;
-
     @GetMapping("/{id}")
     public String editCar(@PathVariable Long id, Model model) {
 
@@ -32,27 +32,38 @@ public class AdminEditCarController {
             car = restClientCall.get(Car.class, "/car/details?id={id}", id);
         } catch (HttpClientErrorException.NotFound e) {
             //TODO: Show error that car was not found.
-            return "redirect:/admin?error=Car not found.";
+            return "redirect:/admin?error=car_not_found.";
         } catch (HttpClientErrorException e) {
             //TODO: Show unexpected error happened.
-            return "redirect:/admin?error=Unexpected error. Error message: " + e.getMessage();
+            return "redirect:/admin?error=unexpected_error";
         }
 
-        this.car = car;
         model.addAttribute("car", car);
         return "admin/caredit";
     }
 
-    @PostMapping("/save")
-    public String saveCar(@ModelAttribute("car") Car car,
+    @PostMapping("/{id}")
+//            ("/save")
+    public String saveCar(@PathVariable Long id,
+                          @Valid @ModelAttribute("car") Car car,
                           BindingResult bindingResult,
-                          @RequestParam(name = "image", required = false) MultipartFile file) throws IOException {
+                          @RequestParam(name = "image", required = false) MultipartFile file,
+                          RedirectAttributes redirectAttributes) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "admin/caredit";
         }
 
-        Car origCar = this.car;
+        Car origCar;
+        try {
+            origCar = restClientCall.get(Car.class, "/car/details?id={id}", id);
+        } catch (HttpClientErrorException.NotFound e) {
+            //TODO: Show error that car was not found.
+            return "redirect:/admin?error=car_not_found.";
+        } catch (HttpClientErrorException e) {
+            //TODO: Show unexpected error happened.
+            return "redirect:/admin?error=unexpected_error";
+        }
 
         if (car.getBrand() != null)
             origCar.setBrand(car.getBrand());
